@@ -22,3 +22,9 @@ go get github.com/meehow/peer-id-generator
 ➜  ~ ipfs name publish --key=dupa QmUNLLsPACCz1vLxQVkXqqLX5R1X345qqfHbsf67hvA3Nn
 Published to 12D3KooWMJmDUPAtjcaHo8LARo5VHQ5uSxrt8Mdi5fytiRnnfD2f: /ipfs/QmUNLLsPACCz1vLxQVkXqqLX5R1X345qqfHbsf67hvA3Nn
 </pre>
+
+## Examples
+
+In [examples](examples) you can find key pairs which contain word "funny"
+at the end of Peer ID. They are just for demonstration purposes.
+Please consider these private keys as already leaked.
