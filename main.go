@@ -7,13 +7,23 @@ import (
 	"log"
 	"os"
 	"regexp"
+	"runtime"
 	"strings"
 
 	"github.com/libp2p/go-libp2p-crypto"
 	"github.com/libp2p/go-libp2p-peer"
 )
 
-var alphabet = regexp.MustCompile("^[123456789abcdefghijklmnopqrstuvwxyz]+$")
+var (
+	alphabet   = regexp.MustCompile("^[123456789abcdefghijklmnopqrstuvwxyz]+$")
+	numWorkers = runtime.NumCPU()
+)
+
+// Key stores PrettyID containing desired substring at Index
+type Key struct {
+	PrettyID string
+	Index    int
+}
 
 func main() {
 	if len(os.Args) != 2 {
@@ -33,15 +43,27 @@ Usage:
 		fmt.Println("{part} must match the alphabet:", alphabet.String())
 		os.Exit(2)
 	}
-	for {
-		err := generateKey(part)
-		if err != nil {
-			log.Fatal(err)
-		}
+	runtime.GOMAXPROCS(numWorkers)
+	keyChan := make(chan Key)
+	for i := 0; i < numWorkers; i++ {
+		go func() {
+			err := generateKey(part, keyChan)
+			if err != nil {
+				log.Fatal(err)
+			}
+		}()
+	}
+	for key := range keyChan {
+		fmt.Printf(
+			"%s\u001b[32m%s\u001b[0m%s\n",
+			key.PrettyID[:key.Index],
+			key.PrettyID[key.Index:len(part)+key.Index],
+			key.PrettyID[len(part)+key.Index:])
+
 	}
 }
 
-func generateKey(part string) error {
+func generateKey(part string, keyChan chan Key) error {
 	for {
 		privateKey, publicKey, err := crypto.GenerateEd25519Key(rand.Reader)
 		if err != nil {
@@ -61,7 +83,13 @@ func generateKey(part string) error {
 		if err != nil {
 			return err
 		}
-		fmt.Printf("%s\u001b[32m%s\u001b[0m%s\n", prettyID[:idx], prettyID[idx:len(part)+idx], prettyID[len(part)+idx:])
-		return ioutil.WriteFile(prettyID, privateKeyBytes, 0600)
+		err = ioutil.WriteFile(prettyID, privateKeyBytes, 0600)
+		if err != nil {
+			return err
+		}
+		keyChan <- Key{
+			PrettyID: prettyID,
+			Index:    idx,
+		}
 	}
 }
