@@ -36,3 +36,19 @@ Published to 12D3KooWMJm**DUPA**tjcaHo8LARo5VHQ5uSxrt8Mdi5fytiRnnfD2f: {ipfs-pat
 In [examples](examples) you can find key pairs which contain word "funny"
 at the end of Peer ID. They are just for demonstration purposes.
 Please consider these private keys as already leaked.
+
+## Benchmarks
+
+This tool is using [Ed25519](https://godoc.org/golang.org/x/crypto/ed25519)
+algorithm because it is able to generate keys **2500 times faster**
+than [RSA](https://godoc.org/crypto/rsa) and both can work with IPFS.
+
+```
+goos: linux
+goarch: amd64
+pkg: github.com/meehow/peer-id-generator
+BenchmarkRSA-4       	      10	 162383811 ns/op
+BenchmarkEd25519-4   	   20000	     64165 ns/op
+PASS
+ok  	github.com/meehow/peer-id-generator	4.384s
+```
