@@ -10,8 +10,8 @@ import (
 	"runtime"
 	"strings"
 
-	"github.com/libp2p/go-libp2p-crypto"
-	"github.com/libp2p/go-libp2p-peer"
+	"github.com/libp2p/go-libp2p-core/crypto"
+	"github.com/libp2p/go-libp2p-core/peer"
 )
 
 var (
@@ -79,11 +79,12 @@ func generateKey(part string, keyChan chan Key) error {
 		if idx == -1 {
 			continue
 		}
-		privateKeyBytes, err := privateKey.Bytes()
+		privateKeyBytes, err := privateKey.Raw()
 		if err != nil {
 			return err
 		}
 		err = ioutil.WriteFile(prettyID, privateKeyBytes, 0600)
+		// TODO print privateKey in base64, as in ~/.ipfs/config .Identity.PrivKey
 		if err != nil {
 			return err
 		}
