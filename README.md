@@ -7,7 +7,7 @@ like one of them, you can move it to ~/.ipfs/keystore/ to use it with IPFS.
 ## Installation
 
 ```
-go get github.com/meehow/peer-id-generator
+go install github.com/meehow/peer-id-generator@latest
 ```
 
 ## Usage
